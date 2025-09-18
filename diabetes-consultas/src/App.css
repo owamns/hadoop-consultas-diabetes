@@ -1,0 +1,187 @@
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Layout de dos columnas */
+.app-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+/* Panel izquierdo (formulario y mensajes) */
+.sidebar {
+  flex: 0 0 25%;
+  background: var(--nord6); /* fondo claro del tema */
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+/* Panel derecho (tabla con scroll) */
+.results {
+  flex: 0 0 75%;
+  background: var(--nord6);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botón de descarga */
+.download-btn {
+  margin-top: 1rem;
+}
+.download-btn button {
+  background-color: #57a773;
+  color: #ffffff;
+  border: none;
+  padding: 0.6em 1.2em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.download-btn button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+.download-btn button:not(:disabled):hover {
+  background-color: #4c9168;
+}
+
+/* Spinner animado */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--nord3);
+  border-top: 4px solid var(--nord9);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.pagination button {
+  background-color: var(--nord9);
+  color: var(--nord6);
+  border: none;
+  padding: 0.4em 0.8em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.pagination button:disabled {
+  background-color: var(--nord3);
+  cursor: not-allowed;
+}
+.pagination span {
+  color: var(--nord8);
+}
+
+/* Light theme overrides */
+body {
+  background-color: #f9f9f9 !important;
+  color: #333 !important;
+}
+.sidebar, .results {
+  background-color: #ffffff !important;
+}
+h1, p, label, th, td {
+  color: #333 !important;
+}
+a {
+  color: #007bff !important;
+}
+a:hover {
+  color: #0056b3 !important;
+}
+table thead {
+  background-color: #e0e0e0 !important;
+}
+tr:nth-child(even) {
+  background-color: #f7f7f7 !important;
+}
+tr:hover {
+  background-color: #f1f1f1 !important;
+}
+.download-btn button, .pagination button {
+  background-color: #007bff !important;
+  color: #fff !important;
+  border: none !important;
+}
+.download-btn button:hover:not(:disabled), .pagination button:hover:not(:disabled) {
+  background-color: #0069d9 !important;
+}
+.download-btn button:disabled, .pagination button:disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+}
+/* Formularios: select e input */
+select, input {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border: 1px solid #cccccc !important;
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+}
+select:hover, input:hover {
+  border-color: #a6a6a6 !important;
+}
+select:focus, input:focus {
+  outline: none !important;
+  border-color: #007bff !important;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25) !important;
+}
