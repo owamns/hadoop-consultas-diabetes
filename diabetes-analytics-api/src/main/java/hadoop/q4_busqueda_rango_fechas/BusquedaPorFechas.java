@@ -21,8 +21,9 @@ public class BusquedaPorFechas {
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             Configuration conf = context.getConfiguration();
-            startDate = Integer.parseInt(conf.get("startDate"));
-            endDate = Integer.parseInt(conf.get("endDate"));
+            startDate = Integer.parseInt(conf.get("startDate").replaceAll("-", ""));
+            endDate = Integer.parseInt(conf.get("endDate").replaceAll("-", ""));
+            System.out.println("inicio:" + startDate + " fin:" + endDate);
         }
 
         @Override
@@ -32,12 +33,11 @@ public class BusquedaPorFechas {
             String[] fields = value.toString().split(";");
             if (fields.length > 17) {
                 try {
-                    int fechaMuestra = Integer.parseInt(fields[17].trim());
+                    int fechaMuestra = Integer.parseInt(fields[17].trim().replaceAll("-", ""));
                     if (fechaMuestra >= startDate && fechaMuestra <= endDate) {
                         context.write(value, NullWritable.get());
                     }
                 } catch (NumberFormatException e) {
-                    // Ignorar registro si la fecha no es un número válido
                 }
             }
         }

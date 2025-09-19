@@ -22,7 +22,6 @@ import java.util.Map;
 
 public class NormalizacionMinMaxColesterol {
 
-    // ================= JOB 1: CALCULAR MIN Y MAX POR PROVINCIA =================
     public static class MinMaxMapper extends Mapper<LongWritable, Text, Text, DoubleWritable> {
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -56,22 +55,19 @@ public class NormalizacionMinMaxColesterol {
         }
     }
 
-    // ================= JOB 2: APLICAR NORMALIZACIÓN =================
     public static class NormalizationMapper extends Mapper<LongWritable, Text, Text, NullWritable> {
         private Map<String, String> provinciaMinMaxMap = new HashMap<>();
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
-            // Cargar los datos de min/max del DistributedCache en memoria
             URI[] cacheFiles = context.getCacheFiles();
             if (cacheFiles != null && cacheFiles.length > 0) {
                 for (URI file : cacheFiles) {
-                    // El path local del archivo en el nodo de datos
                     Path localPath = new Path(file.getPath());
                     try (BufferedReader reader = new BufferedReader(new FileReader(localPath.getName()))) {
                         String line;
                         while ((line = reader.readLine()) != null) {
-                            String[] parts = line.split("\t"); // El reducer por defecto usa tab como separador
+                            String[] parts = line.split("\t");
                             if (parts.length == 2) {
                                 provinciaMinMaxMap.put(parts[0], parts[1]);
                             }
@@ -84,7 +80,6 @@ public class NormalizacionMinMaxColesterol {
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             if (key.get() == 0) {
-                // Escribir la cabecera con la nueva columna
                 context.write(new Text(value.toString() + ";COLESTEROL_NORMALIZADO"), NullWritable.get());
                 return;
             }
@@ -110,23 +105,20 @@ public class NormalizacionMinMaxColesterol {
                         }
 
                         context.write(new Text(originalLine + ";" + String.format("%.4f", normalizedValue)), NullWritable.get());
-                        return; // Salir para no escribir la línea original sin normalizar
+                        return;
                     }
                 } catch (Exception e) {}
             }
-            // Si no se pudo normalizar, escribir la línea original con un campo vacío al final
             context.write(new Text(originalLine + ";"), NullWritable.get());
         }
     }
 
-    // ================= MÉTODO PARA EJECUTAR EL TRABAJO =================
     public static boolean runJob(String inputPathStr, String outputPathStr) throws Exception {
         Configuration conf = new Configuration();
         Path inputPath = new Path(inputPathStr);
         Path minMaxPath = new Path(outputPathStr + "_temp_minmax");
         Path finalOutputPath = new Path(outputPathStr);
 
-        // ------------ Ejecutar Job 1 ------------
         Job job1 = Job.getInstance(conf, "Paso 1: Calcular Min-Max de Colesterol por Provincia");
         job1.setJarByClass(NormalizacionMinMaxColesterol.class);
         job1.setMapperClass(MinMaxMapper.class);
@@ -142,13 +134,10 @@ public class NormalizacionMinMaxColesterol {
             return false;
         }
 
-        // ------------ Configurar y Ejecutar Job 2 ------------
         Job job2 = Job.getInstance(conf, "Paso 2: Aplicar Normalización Min-Max");
         job2.setJarByClass(NormalizacionMinMaxColesterol.class);
-        // Añadir la salida del Job 1 al DistributedCache del Job 2
         job2.addCacheFile(new URI(minMaxPath.toString() + "/part-r-00000"));
         job2.setMapperClass(NormalizationMapper.class);
-        // No se necesita Reducer, el Mapper hace todo el trabajo
         job2.setNumReduceTasks(0);
         job2.setOutputKeyClass(Text.class);
         job2.setOutputValueClass(NullWritable.class);
@@ -157,7 +146,6 @@ public class NormalizacionMinMaxColesterol {
 
         boolean success = job2.waitForCompletion(true);
 
-        // Limpiar directorio temporal
         FileSystem fs = FileSystem.get(conf);
         fs.delete(minMaxPath, true);
         return success;

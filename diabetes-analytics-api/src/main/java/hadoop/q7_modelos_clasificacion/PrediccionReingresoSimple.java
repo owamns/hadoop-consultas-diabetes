@@ -16,15 +16,14 @@ import java.io.IOException;
 public class PrediccionReingresoSimple {
 
     public static class PredictionMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
-        // "Pesos" del modelo que se leerán de la configuración
         private double weightAge, weightGlucose, threshold;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             Configuration conf = context.getConfiguration();
-            weightAge = conf.getDouble("model.weight.age", 0.02); // Valor por defecto 0.02
-            weightGlucose = conf.getDouble("model.weight.glucose", 0.01); // Valor por defecto 0.01
-            threshold = conf.getDouble("model.threshold", 3.0); // Valor por defecto 3.0
+            weightAge = conf.getDouble("model.weight.age", 0.02);
+            weightGlucose = conf.getDouble("model.weight.glucose", 0.01);
+            threshold = conf.getDouble("model.threshold", 3.0);
         }
 
         @Override
@@ -40,11 +39,9 @@ public class PrediccionReingresoSimple {
                     else if (fields[23].toUpperCase().contains("GLUCOSA")) glucosa = Double.parseDouble(fields[24]);
 
                     if (glucosa > 0) {
-                        // Aplicar el modelo de predicción
                         double score = (weightAge * edad) + (weightGlucose * glucosa);
                         String prediction = (score > threshold) ? "ALTA_PROBABILIDAD_REINGRESO" : "BAJA_PROBABILIDAD_REINGRESO";
 
-                        // Contar cuántos pacientes hay en cada categoría
                         context.write(new Text(prediction), new IntWritable(1));
                     }
                 } catch (Exception e) {}
@@ -65,7 +62,6 @@ public class PrediccionReingresoSimple {
 
     public static boolean runJob(String inputPath, String outputPath) throws Exception {
         Configuration conf = new Configuration();
-        // Set default hyperparameters
         conf.setDouble("model.weight.age", 0.03);
         conf.setDouble("model.weight.glucose", 0.015);
         conf.setDouble("model.threshold", 4.0);
